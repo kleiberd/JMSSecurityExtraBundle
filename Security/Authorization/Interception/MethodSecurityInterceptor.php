@@ -29,6 +29,7 @@ use JMS\SecurityExtraBundle\Security\Authorization\AfterInvocation\AfterInvocati
 use JMS\SecurityExtraBundle\Security\Authorization\RunAsManagerInterface;
 use Metadata\MetadataFactoryInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Security\Core\Authentication\Token\AnonymousToken;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authorization\AccessDecisionManagerInterface;
 use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface;
@@ -92,9 +93,7 @@ class MethodSecurityInterceptor implements MethodInterceptorInterface
         $metadata = $metadata->methodMetadata[$method->reflection->name];
 
         if (null === $token = $this->tokenStorage->getToken()) {
-            throw new AuthenticationCredentialsNotFoundException(
-                'The security context was not populated with a Token.'
-            );
+            $token = new AnonymousToken('anon.', 'anon.');
         }
 
         if ($this->alwaysAuthenticate || !$token->isAuthenticated()) {
